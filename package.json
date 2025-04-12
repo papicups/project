@@ -35,5 +35,18 @@
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.3.0",
     "vite": "^5.4.2"
-  }
+  },
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://cafeconleche2025@github.com/cafeconleche2025/gane.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cafeconleche2025/gane/issues"
+  },
+  "homepage": "https://github.com/cafeconleche2025/gane#readme",
+  "description": ""
 }

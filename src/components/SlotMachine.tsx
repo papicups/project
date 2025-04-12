@@ -5,31 +5,36 @@ import { Howl } from 'howler';
 import { Coffee, Trophy } from 'lucide-react';
 import * as THREE from 'three';
 
+interface CustomWindow extends Window {
+  canSpin: boolean;
+  isWinSoundPlaying: boolean;
+}
+
 const sounds = {
   spin: new Howl({
     src: ['./sonidos/spin.mp3'], // Change to relative path
     preload: true,
     volume: 0.7,
     onload: () => console.log('Spin sound loaded'),
-    onloaderror: (id, error) => console.error("Error loading spin sound:", error)
+    onloaderror: (_, error) => console.error("Error loading spin sound:", error)
   }),
   win: new Howl({
     src: ['./sonidos/win.mp3'], // Change to relative path
     preload: true,
     volume: 0.8,
     onload: () => console.log('Win sound loaded'),
-    onloaderror: (id, error) => console.error("Error loading win sound:", error),
+    onloaderror: (_, error) => console.error("Error loading win sound:", error),
     onend: function() {
-      (window as any).isWinSoundPlaying = false;
-      (window as any).canSpin = true;
+      ((window as unknown) as CustomWindow).isWinSoundPlaying = false;
+      ((window as unknown) as CustomWindow).canSpin = true;
     }
   }),
   push: new Howl({
-    src: ['./sonidos/push.mp3'], // Change to relative path
+    src: ['./sonidos/push.mp3'], // Corrected to use the proper push sound
     preload: true,
     volume: 0.5,
     onload: () => console.log('Push sound loaded'),
-    onloaderror: (id, error) => console.error("Error loading push sound:", error)
+    onloaderror: (_, error) => console.error("Error loading push sound:", error)
   })
 };
 
@@ -44,9 +49,9 @@ const playSoundWithCheck = (sound: Howl) => {
 
 // Add a function to manage win sound
 const playWinSound = () => {
-  if (!(window as any).isWinSoundPlaying) {
-    (window as any).isWinSoundPlaying = true;
-    (window as any).canSpin = false;
+  if (!((window as unknown) as CustomWindow).isWinSoundPlaying) {
+    ((window as unknown) as CustomWindow).isWinSoundPlaying = true;
+    ((window as unknown) as CustomWindow).canSpin = false;
     sounds.win.play();
   }
 };
@@ -116,9 +121,12 @@ function Machine() {
 
   const spin = () => {
     // Don't spin if already spinning or win sound is playing
-    if (isSpinning || !(window as any).canSpin) return;
+    if (isSpinning || !((window as unknown) as CustomWindow).canSpin) return;
     
-    setIsSpinning(true);
+    setIsSpinning((prev) => {
+      if (prev) return prev; // Prevent re-triggering if already spinning
+      return true;
+    });
     playSoundWithCheck(sounds.spin);
 
     let spins = 0;
@@ -141,7 +149,7 @@ function Machine() {
           setFlash(true);
           setTimeout(() => setFlash(false), 3000);
         } else {
-          (window as any).canSpin = true;
+          ((window as unknown) as CustomWindow).canSpin = true;
         }
       }
     }, 100);
@@ -260,9 +268,8 @@ function DigitalCounter({ onPush }: { onPush: (number: number) => void }) {
 }
 
 export default function SlotMachine() {
-  const [jackpot] = useState({ gold: 100000, silver: 50000 });
+  // Removed unused jackpot state
   const [winningNumbers, setWinningNumbers] = useState<string[]>([]);
-  const [pushedNumbers, setPushedNumbers] = useState<number[]>([]);
   const [backgroundImage, setBackgroundImage] = useState<string>('');
 
   useEffect(() => {
@@ -279,14 +286,10 @@ export default function SlotMachine() {
   const updateWinningNumbers = (numbers: string[]) => {
     setWinningNumbers(prev => [...numbers, ...prev].slice(0, 5));
   };
-
-  const handlePush = (number: number) => {
-    setPushedNumbers(prev => [number, ...prev].slice(0, 5));
-  };
-
   useEffect(() => {
-    (window as any).canSpin = true;
-    (window as any).isWinSoundPlaying = false;
+    const customWindow = window as unknown as CustomWindow;
+    customWindow.canSpin = true;
+    customWindow.isWinSoundPlaying = false;
     return () => {
       sounds.win.stop();
     };
@@ -299,25 +302,10 @@ export default function SlotMachine() {
     >
       <div className="container mx-auto px-4 py-8">
         {/* Digital Counter */}
-        <DigitalCounter onPush={handlePush} />
+        <DigitalCounter onPush={(number) => setWinningNumbers((prev) => [...prev, number.toString().padStart(2, '0')].slice(0, 5))} />
 
         {/* Pushed Numbers Display */}
-        {pushedNumbers.length > 0 && (
-          <div className="fixed top-20 right-4 bg-black bg-opacity-80 p-4 rounded-lg">
-            <h3 className="text-white text-sm font-bold mb-2">Números Push</h3>
-            <div className="flex flex-col gap-2">
-              {pushedNumbers.map((number, index) => (
-                <div
-                  key={index}
-                  className="bg-gradient-to-r from-red-500 to-red-700 px-3 py-1 rounded text-white font-mono font-bold text-center"
-                >
-                  {number.toString().padStart(2, '0')}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
+        {/* Removed unused Pushed Numbers Display */}
         {/* Jackpot Display */}
         <div className="mb-8 flex justify-center gap-8">
           <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 p-4 rounded-lg shadow-lg">
@@ -414,6 +402,7 @@ export default function SlotMachine() {
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
+            onClick={() => playSoundWithCheck(sounds.bingo)}
           >
             <Coffee className="w-6 h-6" />
             <span>¡A voluntad por MercadoPago!</span>
