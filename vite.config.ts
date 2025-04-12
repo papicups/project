@@ -1,10 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: './',  // Changed to relative path for better compatibility
+  base: '/project/', // Set to repository name for GitHub Pages
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
@@ -15,6 +14,10 @@ export default defineConfig({
       output: {
         manualChunks: undefined
       }
-    }
-  }
+    },
+    // Ensure static assets are copied to build
+    assetsInclude: ['**/*.mp3', '**/*.jpg', '**/*.json']
+  },
+  // Properly configure public directory
+  publicDir: 'public'
 });
