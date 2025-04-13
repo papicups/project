@@ -111,20 +111,23 @@ function RotatingTitle() {
 function FeatherCabure({ position = [-2, 0, 0] }: { position?: [number, number, number] }) {
   const featherRef = useRef<THREE.Group>(null);
   const [visible, setVisible] = useState(true);
+  const [glowIntensity, setGlowIntensity] = useState(0);
 
   useFrame((state) => {
     if (featherRef.current) {
       featherRef.current.rotation.y += 0.01;
       featherRef.current.position.y = Math.sin(state.clock.elapsedTime) * 0.1;
+      
+      // Pulsating blue glow effect
+      const pulseIntensity = (Math.sin(state.clock.elapsedTime * 3) + 1) / 2;
+      setGlowIntensity(pulseIntensity);
     }
   });
 
   useEffect(() => {
-    // Hide the feather after 5 seconds
     const timer = setTimeout(() => {
       setVisible(false);
     }, 5000);
-    
     return () => clearTimeout(timer);
   }, []);
 
@@ -132,28 +135,62 @@ function FeatherCabure({ position = [-2, 0, 0] }: { position?: [number, number, 
 
   return (
     <group ref={featherRef} position={position} scale={[0.03, 0.03, 0.03]}>
+      {/* Blue glow light */}
+      <pointLight
+        position={[0, 0, 0]}
+        distance={2}
+        intensity={2}
+        color="#4169E1"
+      />
+      
+      {/* Main feather stem */}
       <mesh>
         <boxGeometry args={[1, 20, 0.2]} />
         <meshPhysicalMaterial 
           color="#8B4513"
-          metalness={0.1}
-          roughness={0.8}
+          metalness={0.8}
+          roughness={0.2}
           clearcoat={1}
+          clearcoatRoughness={0.1}
+          emissive="#0066ff"
+          emissiveIntensity={glowIntensity * 0.5}
+          envMapIntensity={2}
         />
       </mesh>
-      {/* Feather details */}
+
+      {/* Feather details with shimmering effect */}
       {Array.from({ length: 15 }).map((_, i) => (
         <mesh key={i} position={[0, i * 1.2 - 10, 0.2]} rotation={[0, 0, Math.PI * 0.15]}>
           <planeGeometry args={[3, 1]} />
           <meshPhysicalMaterial 
             color="#D2691E"
-            metalness={0.2}
-            roughness={0.7}
+            metalness={0.6}
+            roughness={0.3}
             transparent
             opacity={0.9}
             side={THREE.DoubleSide}
+            emissive="#1E90FF"
+            emissiveIntensity={glowIntensity * 0.3}
+            envMapIntensity={3}
           />
         </mesh>
+      ))}
+
+      {/* Additional blue light beams */}
+      {[0, Math.PI / 2, Math.PI, Math.PI * 1.5].map((angle, i) => (
+        <spotLight
+          key={i}
+          position={[
+            Math.cos(angle) * 0.5,
+            0,
+            Math.sin(angle) * 0.5
+          ]}
+          angle={0.3}
+          penumbra={0.8}
+          intensity={glowIntensity * 2}
+          color="#4169E1"
+          distance={2}
+        />
       ))}
     </group>
   );
