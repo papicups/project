@@ -140,9 +140,10 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
   });
 
   useEffect(() => {
+    // Aumentar duración a 15 segundos
     const timer = setTimeout(() => {
       setVisible(false);
-    }, 10000);
+    }, 15000);
     return () => clearTimeout(timer);
   }, []);
 
