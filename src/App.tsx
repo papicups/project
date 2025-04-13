@@ -1,16 +1,26 @@
 import { useEffect } from 'react';
 import SlotMachine from './components/SlotMachine';
+import { Howl } from 'howler';
 
 function App() {
   useEffect(() => {
-    const welcomeSound = new Audio('/sonidos/welcome.mp3');
-    const exitSound = new Audio('/sonidos/exit.mp3');
+    const base = import.meta.env.BASE_URL;
+    
+    const welcomeSound = new Howl({
+      src: [`${base}sonidos/welcome.mp3`],
+      preload: true,
+      volume: 0.7
+    });
+    
+    const exitSound = new Howl({
+      src: [`${base}sonidos/exit.mp3`],
+      preload: true,
+      volume: 0.7
+    });
 
     // Play welcome sound on mount if allowed by user interaction
     const playWelcomeSound = () => {
-      welcomeSound.play().catch((error) => {
-        console.error('Error playing welcome sound:', error);
-      });
+      welcomeSound.play();
     };
 
     // Add event listener for user interaction to play welcome sound
@@ -18,9 +28,7 @@ function App() {
 
     // Play exit sound on unmount
     return () => {
-      exitSound.play().catch((error) => {
-        console.error('Error playing exit sound:', error);
-      });
+      exitSound.play();
     };
   }, []);
 

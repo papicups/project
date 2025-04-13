@@ -14,10 +14,8 @@ export default defineConfig({
       output: {
         manualChunks: undefined
       }
-    },
-    // Ensure static assets are copied to build
-    assetsInclude: ['**/*.mp3', '**/*.jpg', '**/*.json']
+    }
   },
-  // Properly configure public directory
+  assetsInclude: ['**/*.mp3', '**/*.jpg', '**/*.json', '**/*.typeface.json'],
   publicDir: 'public'
 });

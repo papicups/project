@@ -32,11 +32,18 @@ const sounds = {
     }
   }),
   push: new Howl({
-    src: [`${base}sonidos/bingo.mp3`],
+    src: [`${base}sonidos/push.mp3`],
     preload: true,
     volume: 0.5,
     onload: () => console.log('Push sound loaded'),
     onloaderror: (_, error) => console.error("Error loading push sound:", error)
+  }),
+  bingo: new Howl({
+    src: [`${base}sonidos/bingo.mp3`],
+    preload: true,
+    volume: 0.5,
+    onload: () => console.log('Bingo sound loaded'),
+    onloaderror: (_, error) => console.error("Error loading bingo sound:", error)
   })
 };
 
