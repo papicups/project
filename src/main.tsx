@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { Howl } from 'howler';
+import { EmailReporter } from './services/EmailReporter';
 
 // Preload all sounds at the start
 const preloadSounds = () => {
@@ -22,6 +23,9 @@ const preloadSounds = () => {
 };
 
 preloadSounds();
+
+// Initialize email reporting service
+EmailReporter.getInstance().initialize().catch(console.error);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
