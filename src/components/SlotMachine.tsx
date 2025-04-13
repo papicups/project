@@ -339,7 +339,7 @@ export default function SlotMachine() {
       counts[num] = (counts[num] || 0) + 1;
     });
     
-    return Object.values(counts).some(count => count >= 3);
+    return Object.values(counts).some(count => count >= 2);  // Changed from 3 to 2
   };
 
   useEffect(() => {
@@ -487,7 +487,7 @@ export default function SlotMachine() {
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
-            onClick={() => playSoundWithCheck(sounds.push)}
+            onClick={() => playSoundWithCheck(sounds.bingo)}
           >
             <Coffee className="w-6 h-6" />
             <span>¡A voluntad por MercadoPago!</span>
