@@ -134,7 +134,7 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
   if (!visible) return null;
 
   return (
-    <group ref={featherRef} position={position} scale={[0.15, 0.15, 0.15]}>  {/* Increased scale by 5x */}
+    <group ref={featherRef} position={position} scale={[0.75, 0.75, 0.75]}>  {/* Increased scale 5x from 0.15 to 0.75 */}
       {/* Blue glow light */}
       <pointLight
         position={[0, 0, 0]}
