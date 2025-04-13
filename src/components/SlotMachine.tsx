@@ -115,39 +115,30 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
   const [visible, setVisible] = useState(true);
   const [glowIntensity, setGlowIntensity] = useState(0);
 
-  // Enhanced natural feather animation with more subtle movements
   useFrame((state) => {
     if (featherRef.current) {
-      // Smooth floating motion with subtle rotation
       featherRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.15;
       featherRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.2) * 0.1;
       featherRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.15) * 0.05;
-      
-      // Natural swaying effect
       const swayAmount = Math.sin(state.clock.elapsedTime * 0.4) * 0.02;
       featherRef.current.rotation.x = swayAmount;
-      
       const pulseIntensity = (Math.sin(state.clock.elapsedTime * 1.2) + 1) / 2;
       setGlowIntensity(pulseIntensity);
     }
 
-    // Enhanced sparkle animation
     if (sparklesRef.current) {
       sparklesRef.current.children.forEach((sparkle, i) => {
         const offset = i * (Math.PI / 8);
         const radius = 1.5 + Math.sin(state.clock.elapsedTime * 0.8 + i) * 0.3;
         const heightOffset = Math.sin(state.clock.elapsedTime * 1.2 + offset) * 0.5;
-        
         sparkle.position.x = Math.cos(state.clock.elapsedTime + offset) * radius * 0.8;
         sparkle.position.y = Math.sin(state.clock.elapsedTime * 0.8 + offset) * radius + heightOffset;
         sparkle.position.z = Math.sin(state.clock.elapsedTime * 0.5 + offset) * 0.3;
-        
         sparkle.rotation.z += 0.01;
         sparkle.scale.setScalar(0.5 + Math.sin(state.clock.elapsedTime * 2 + i) * 0.3);
       });
     }
 
-    // Atmospheric glow rotation
     if (glowRef.current) {
       glowRef.current.rotation.z += 0.001;
       glowRef.current.rotation.y += 0.002;
@@ -164,15 +155,9 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
   if (!visible) return null;
 
   return (
-    <group ref={featherRef} position={position} scale={[0.75, 0.75, 0.75]}>
-      {/* Atmospheric glow */}
+    <group ref={featherRef} position={position} scale={[0.525, 0.525, 0.525]}>
       <group ref={glowRef}>
-        <pointLight
-          position={[0, 0, 0]}
-          distance={5}
-          intensity={2}
-          color="#FFD700"
-        />
+        <pointLight position={[0, 0, 0]} distance={5} intensity={2} color="#FFD700" />
         <mesh>
           <sphereGeometry args={[1.5, 16, 16]} />
           <meshPhysicalMaterial
@@ -184,8 +169,7 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
           />
         </mesh>
       </group>
-      
-      {/* Main feather structure with enhanced materials */}
+
       <mesh>
         <cylinderGeometry args={[0.06, 0.03, 20, 12]} />
         <meshPhysicalMaterial 
@@ -200,10 +184,8 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
         />
       </mesh>
 
-      {/* Enhanced vane structure */}
       {Array.from({ length: 50 }).map((_, i) => (
         <group key={i} position={[0, i * 0.35 - 9, 0]} rotation={[0, 0, Math.PI * 0.5]}>
-          {/* Left barbs with gradient effect */}
           <mesh position={[-0.05, 0, 0]} rotation={[0, 0, Math.PI * 0.15]}>
             <planeGeometry args={[3, 0.12]} />
             <meshPhysicalMaterial 
@@ -218,8 +200,6 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
               envMapIntensity={2}
             />
           </mesh>
-          
-          {/* Right barbs with subtle variation */}
           <mesh position={[0.05, 0, 0]} rotation={[0, 0, -Math.PI * 0.15]}>
             <planeGeometry args={[3, 0.12]} />
             <meshPhysicalMaterial 
@@ -234,8 +214,6 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
               envMapIntensity={2}
             />
           </mesh>
-
-          {/* Fine barbules for added detail */}
           {Array.from({ length: 12 }).map((_, j) => (
             <group key={j}>
               <mesh 
@@ -258,7 +236,6 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
         </group>
       ))}
 
-      {/* Enhanced sparkles with depth */}
       <group ref={sparklesRef}>
         {Array.from({ length: 15 }).map((_, i) => (
           <mesh key={i} position={[0, 0, 0]}>
@@ -279,7 +256,6 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
         ))}
       </group>
 
-      {/* Enhanced ambient lighting */}
       {Array.from({ length: 8 }).map((_, i) => {
         const angle = (i * Math.PI * 2) / 8;
         return (
@@ -636,9 +612,11 @@ export default function SlotMachine() {
             <span>¡A voluntad por MercadoPago!</span>
           </a>
           
-          <div className="text-white text-center">
-            <p className="text-xl font-bold">Papiweb Desarrollos Informáticos</p>
-            <p className="text-sm opacity-75">© 2024 Todos los derechos reservados</p>
+          <div
+            className="fixed bottom-0 w-full bg-black bg-opacity-75 text-white text-center py-4"
+          >
+            <p className="text-xl font-bold text-gray-300">Papiweb Desarrollos Informáticos</p>
+            <p className="text-sm opacity-75 text-gray-300">© 2024 Todos los derechos reservados</p>
           </div>
         </div>
       </div>
