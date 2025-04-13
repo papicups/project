@@ -108,8 +108,9 @@ function RotatingTitle() {
   );
 }
 
-function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, number] }) { // Moved more to the left
+function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, number] }) {
   const featherRef = useRef<THREE.Group>(null);
+  const sparklesRef = useRef<THREE.Group>(null);
   const [visible, setVisible] = useState(true);
   const [glowIntensity, setGlowIntensity] = useState(0);
 
@@ -118,9 +119,19 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
       featherRef.current.rotation.y += 0.01;
       featherRef.current.position.y = Math.sin(state.clock.elapsedTime) * 0.1;
       
-      // Pulsating blue glow effect
+      // Pulsating golden glow effect
       const pulseIntensity = (Math.sin(state.clock.elapsedTime * 3) + 1) / 2;
       setGlowIntensity(pulseIntensity);
+    }
+
+    // Animate sparkles
+    if (sparklesRef.current) {
+      sparklesRef.current.children.forEach((sparkle, i) => {
+        const offset = i * (Math.PI / 8);
+        sparkle.position.x = Math.cos(state.clock.elapsedTime * 2 + offset) * 1.5;
+        sparkle.position.y = Math.sin(state.clock.elapsedTime * 2 + offset) * 1.5;
+        sparkle.rotation.z += 0.02;
+      });
     }
   });
 
@@ -134,62 +145,83 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
   if (!visible) return null;
 
   return (
-    <group ref={featherRef} position={position} scale={[0.75, 0.75, 0.75]}>  {/* Increased scale 5x from 0.15 to 0.75 */}
-      {/* Blue glow light */}
+    <group ref={featherRef} position={position} scale={[0.75, 0.75, 0.75]}>
+      {/* Golden glow light */}
       <pointLight
         position={[0, 0, 0]}
-        distance={2}
-        intensity={2}
-        color="#4169E1"
+        distance={3}
+        intensity={3}
+        color="#FFD700"
       />
       
       {/* Main feather stem */}
       <mesh>
         <boxGeometry args={[1, 20, 0.2]} />
         <meshPhysicalMaterial 
-          color="#4A3728"  // Darker brown color like the Caburé bird
-          metalness={0.2}
-          roughness={0.8}
+          color="#4A3728"
+          metalness={0.8}
+          roughness={0.2}
           clearcoat={1}
           clearcoatRoughness={0.1}
-          emissive="#0066ff"
-          emissiveIntensity={glowIntensity * 0.5}
-          envMapIntensity={2}
+          emissive="#FFD700"
+          emissiveIntensity={glowIntensity * 0.7}
+          envMapIntensity={3}
         />
       </mesh>
 
-      {/* Feather details with natural brown colors */}
+      {/* Feather details with golden shimmer */}
       {Array.from({ length: 15 }).map((_, i) => (
         <mesh key={i} position={[0, i * 1.2 - 10, 0.2]} rotation={[0, 0, Math.PI * 0.15]}>
           <planeGeometry args={[3, 1]} />
           <meshPhysicalMaterial 
-            color="#6B4423"  // Rich brown color for feather details
-            metalness={0.2}
-            roughness={0.7}
+            color="#6B4423"
+            metalness={0.9}
+            roughness={0.2}
             transparent
             opacity={0.9}
             side={THREE.DoubleSide}
-            emissive="#1E90FF"
-            emissiveIntensity={glowIntensity * 0.3}
-            envMapIntensity={3}
+            emissive="#FFD700"
+            emissiveIntensity={glowIntensity * 0.5}
+            envMapIntensity={4}
           />
         </mesh>
       ))}
 
-      {/* Additional blue light beams */}
-      {[0, Math.PI / 2, Math.PI, Math.PI * 1.5].map((angle, i) => (
+      {/* Diamond sparkles group */}
+      <group ref={sparklesRef}>
+        {Array.from({ length: 12 }).map((_, i) => (
+          <mesh key={i} position={[0, 0, 0]} rotation={[0, 0, (Math.PI * 2 * i) / 12]}>
+            <octahedronGeometry args={[0.2]} />
+            <meshPhysicalMaterial
+              color="#FFFFFF"
+              metalness={0.9}
+              roughness={0.1}
+              transmission={0.6}
+              thickness={0.5}
+              envMapIntensity={5}
+              clearcoat={1}
+              clearcoatRoughness={0.1}
+              emissive="#FFD700"
+              emissiveIntensity={glowIntensity}
+            />
+          </mesh>
+        ))}
+      </group>
+
+      {/* Golden light beams */}
+      {[0, Math.PI / 3, (2 * Math.PI) / 3, Math.PI, (4 * Math.PI) / 3, (5 * Math.PI) / 3].map((angle, i) => (
         <spotLight
           key={i}
           position={[
-            Math.cos(angle) * 0.5,
-            0,
-            Math.sin(angle) * 0.5
+            Math.cos(angle) * 0.8,
+            Math.sin(angle) * 0.8,
+            0.5
           ]}
           angle={0.3}
-          penumbra={0.8}
-          intensity={glowIntensity * 2}
-          color="#4169E1"
-          distance={2}
+          penumbra={0.9}
+          intensity={glowIntensity * 2.5}
+          color="#FFD700"
+          distance={3}
         />
       ))}
     </group>
