@@ -10,16 +10,18 @@ interface CustomWindow extends Window {
   isWinSoundPlaying: boolean;
 }
 
+const base = import.meta.env.BASE_URL;
+
 const sounds = {
   spin: new Howl({
-    src: ['./sonidos/spin.mp3'], // Change to relative path
+    src: [`${base}sonidos/spin.mp3`],
     preload: true,
     volume: 0.7,
     onload: () => console.log('Spin sound loaded'),
     onloaderror: (_, error) => console.error("Error loading spin sound:", error)
   }),
   win: new Howl({
-    src: ['./sonidos/win.mp3'], // Change to relative path
+    src: [`${base}sonidos/win.mp3`],
     preload: true,
     volume: 0.8,
     onload: () => console.log('Win sound loaded'),
@@ -30,7 +32,7 @@ const sounds = {
     }
   }),
   push: new Howl({
-    src: ['./sonidos/push.mp3'], // Corrected to use the proper push sound
+    src: [`${base}sonidos/bingo.mp3`],
     preload: true,
     volume: 0.5,
     onload: () => console.log('Push sound loaded'),
@@ -74,7 +76,7 @@ function RotatingTitle() {
     <group ref={titleRef} position={[0, -2, 0]} scale={[0.3, 0.3, 0.3]}>
       <Center>
         <Text3D
-          font="/fonts/optimer_regular.typeface.json"
+          font={`${base}fonts/optimer_regular.typeface.json`}
           size={2}
           height={0.2}
           curveSegments={12}
@@ -165,7 +167,7 @@ function Machine() {
         button.removeEventListener('click', spin);
       }
     };
-  }, []);
+  }, [spin]);
 
   useEffect(() => {
     const animation = () => {
@@ -196,7 +198,7 @@ function Machine() {
       {numbers.map((number, i) => (
         <Center key={i} position={[(i - 1) * 1.2, 0, 0.2]}>
           <Text3D
-            font="/fonts/optimer_regular.typeface.json"
+            font={`${base}fonts/optimer_regular.typeface.json`}
             size={0.5}
             height={1}
           >
@@ -277,7 +279,7 @@ export default function SlotMachine() {
     const loadRandomBackground = () => {
       const imageCount = 5; // Número de imágenes en la carpeta
       const randomIndex = Math.floor(Math.random() * imageCount) + 1;
-      setBackgroundImage(`/fotos/image${randomIndex}.jpg`);
+      setBackgroundImage(`${base}fotos/image${randomIndex}.jpg`);
     };
 
     loadRandomBackground();
@@ -402,7 +404,7 @@ export default function SlotMachine() {
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
-            onClick={() => playSoundWithCheck(sounds.bingo)}
+            onClick={() => playSoundWithCheck(sounds.push)}
           >
             <Coffee className="w-6 h-6" />
             <span>¡A voluntad por MercadoPago!</span>
