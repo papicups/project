@@ -114,23 +114,27 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
   const [visible, setVisible] = useState(true);
   const [glowIntensity, setGlowIntensity] = useState(0);
 
+  // Improved natural feather animation
   useFrame((state) => {
     if (featherRef.current) {
-      featherRef.current.rotation.y += 0.01;
-      featherRef.current.position.y = Math.sin(state.clock.elapsedTime) * 0.1;
+      // Suave rotación y movimiento más natural de pluma
+      featherRef.current.rotation.y += 0.003;
+      featherRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
+      // Ligero bamboleo lateral como pluma real
+      featherRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.3) * 0.03;
       
-      // Pulsating golden glow effect
-      const pulseIntensity = (Math.sin(state.clock.elapsedTime * 3) + 1) / 2;
+      const pulseIntensity = (Math.sin(state.clock.elapsedTime * 1.5) + 1) / 2;
       setGlowIntensity(pulseIntensity);
     }
 
-    // Animate sparkles
     if (sparklesRef.current) {
       sparklesRef.current.children.forEach((sparkle, i) => {
         const offset = i * (Math.PI / 8);
-        sparkle.position.x = Math.cos(state.clock.elapsedTime * 2 + offset) * 1.5;
-        sparkle.position.y = Math.sin(state.clock.elapsedTime * 2 + offset) * 1.5;
-        sparkle.rotation.z += 0.02;
+        const radius = 1.2 + Math.sin(state.clock.elapsedTime + i) * 0.3;
+        sparkle.position.x = Math.cos(state.clock.elapsedTime * 1.5 + offset) * radius;
+        sparkle.position.y = Math.sin(state.clock.elapsedTime * 1.5 + offset) * radius;
+        sparkle.rotation.z += 0.01;
+        sparkle.scale.setScalar(0.7 + Math.sin(state.clock.elapsedTime * 3 + i) * 0.3);
       });
     }
   });
@@ -138,7 +142,7 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
   useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(false);
-    }, 5000);
+    }, 10000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -146,84 +150,131 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
 
   return (
     <group ref={featherRef} position={position} scale={[0.75, 0.75, 0.75]}>
-      {/* Golden glow light */}
+      {/* Luz ambiental dorada suave */}
       <pointLight
         position={[0, 0, 0]}
-        distance={3}
-        intensity={3}
+        distance={4}
+        intensity={1.5}
         color="#FFD700"
       />
       
-      {/* Main feather stem */}
+      {/* Raquis (tallo central) */}
       <mesh>
-        <boxGeometry args={[1, 20, 0.2]} />
+        <cylinderGeometry args={[0.08, 0.04, 20, 8]} />
         <meshPhysicalMaterial 
-          color="#4A3728"
-          metalness={0.8}
-          roughness={0.2}
-          clearcoat={1}
-          clearcoatRoughness={0.1}
-          emissive="#FFD700"
-          emissiveIntensity={glowIntensity * 0.7}
-          envMapIntensity={3}
+          color="#2A1810"
+          metalness={0.2}
+          roughness={0.8}
+          clearcoat={0.5}
+          clearcoatRoughness={0.3}
+          emissive="#FFA500"
+          emissiveIntensity={glowIntensity * 0.2}
         />
       </mesh>
 
-      {/* Feather details with golden shimmer */}
-      {Array.from({ length: 15 }).map((_, i) => (
-        <mesh key={i} position={[0, i * 1.2 - 10, 0.2]} rotation={[0, 0, Math.PI * 0.15]}>
-          <planeGeometry args={[3, 1]} />
-          <meshPhysicalMaterial 
-            color="#6B4423"
-            metalness={0.9}
-            roughness={0.2}
-            transparent
-            opacity={0.9}
-            side={THREE.DoubleSide}
-            emissive="#FFD700"
-            emissiveIntensity={glowIntensity * 0.5}
-            envMapIntensity={4}
-          />
-        </mesh>
+      {/* Cálamo (base hueca del raquis) */}
+      <mesh position={[0, -9.5, 0]}>
+        <cylinderGeometry args={[0.12, 0.08, 1, 8]} />
+        <meshPhysicalMaterial 
+          color="#3D2B1F"
+          metalness={0.3}
+          roughness={0.7}
+          clearcoat={0.5}
+        />
+      </mesh>
+
+      {/* Vexilo (estructura principal de la pluma) */}
+      {Array.from({ length: 40 }).map((_, i) => (
+        <group key={i} position={[0, i * 0.45 - 9, 0]} rotation={[0, 0, Math.PI * 0.5]}>
+          {/* Bárbulas izquierdas */}
+          <mesh position={[-0.05, 0, 0]} rotation={[0, 0, Math.PI * 0.15]}>
+            <planeGeometry args={[2.8, 0.15]} />
+            <meshPhysicalMaterial 
+              color="#4A3728"
+              metalness={0.3}
+              roughness={0.7}
+              transparent
+              opacity={0.95}
+              side={THREE.DoubleSide}
+              emissive="#FFD700"
+              emissiveIntensity={glowIntensity * 0.2}
+            />
+          </mesh>
+          
+          {/* Bárbulas derechas */}
+          <mesh position={[0.05, 0, 0]} rotation={[0, 0, -Math.PI * 0.15]}>
+            <planeGeometry args={[2.8, 0.15]} />
+            <meshPhysicalMaterial 
+              color="#4A3728"
+              metalness={0.3}
+              roughness={0.7}
+              transparent
+              opacity={0.95}
+              side={THREE.DoubleSide}
+              emissive="#FFD700"
+              emissiveIntensity={glowIntensity * 0.2}
+            />
+          </mesh>
+
+          {/* Microbárbulas (detalles finos) */}
+          {Array.from({ length: 8 }).map((_, j) => (
+            <group key={j}>
+              <mesh position={[-1 + j * 0.3, 0, 0.01]} rotation={[0, 0, Math.PI * 0.12]}>
+                <planeGeometry args={[0.1, 0.08]} />
+                <meshPhysicalMaterial 
+                  color="#5C4033"
+                  metalness={0.2}
+                  roughness={0.8}
+                  transparent
+                  opacity={0.8}
+                  side={THREE.DoubleSide}
+                />
+              </mesh>
+            </group>
+          ))}
+        </group>
       ))}
 
-      {/* Diamond sparkles group */}
+      {/* Destellos de diamante suavizados */}
       <group ref={sparklesRef}>
         {Array.from({ length: 12 }).map((_, i) => (
-          <mesh key={i} position={[0, 0, 0]} rotation={[0, 0, (Math.PI * 2 * i) / 12]}>
-            <octahedronGeometry args={[0.2]} />
+          <mesh key={i} position={[0, 0, 0]}>
+            <octahedronGeometry args={[0.1]} />
             <meshPhysicalMaterial
               color="#FFFFFF"
-              metalness={0.9}
+              metalness={1}
               roughness={0.1}
-              transmission={0.6}
+              transmission={0.8}
               thickness={0.5}
               envMapIntensity={5}
               clearcoat={1}
               clearcoatRoughness={0.1}
               emissive="#FFD700"
-              emissiveIntensity={glowIntensity}
+              emissiveIntensity={glowIntensity * 0.8}
             />
           </mesh>
         ))}
       </group>
 
-      {/* Golden light beams */}
-      {[0, Math.PI / 3, (2 * Math.PI) / 3, Math.PI, (4 * Math.PI) / 3, (5 * Math.PI) / 3].map((angle, i) => (
-        <spotLight
-          key={i}
-          position={[
-            Math.cos(angle) * 0.8,
-            Math.sin(angle) * 0.8,
-            0.5
-          ]}
-          angle={0.3}
-          penumbra={0.9}
-          intensity={glowIntensity * 2.5}
-          color="#FFD700"
-          distance={3}
-        />
-      ))}
+      {/* Luces doradas suaves direccionales */}
+      {Array.from({ length: 6 }).map((_, i) => {
+        const angle = (i * Math.PI * 2) / 6;
+        return (
+          <spotLight
+            key={i}
+            position={[
+              Math.cos(angle) * 1,
+              Math.sin(angle) * 1,
+              0.5
+            ]}
+            angle={0.4}
+            penumbra={0.9}
+            intensity={glowIntensity * 1.5}
+            color="#FFD700"
+            distance={4}
+          />
+        );
+      })}
     </group>
   );
 }
