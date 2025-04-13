@@ -108,7 +108,7 @@ function RotatingTitle() {
   );
 }
 
-function FeatherCabure({ position = [-2, 0, 0] }: { position?: [number, number, number] }) {
+function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, number] }) { // Moved more to the left
   const featherRef = useRef<THREE.Group>(null);
   const [visible, setVisible] = useState(true);
   const [glowIntensity, setGlowIntensity] = useState(0);
@@ -134,7 +134,7 @@ function FeatherCabure({ position = [-2, 0, 0] }: { position?: [number, number, 
   if (!visible) return null;
 
   return (
-    <group ref={featherRef} position={position} scale={[0.03, 0.03, 0.03]}>
+    <group ref={featherRef} position={position} scale={[0.15, 0.15, 0.15]}>  {/* Increased scale by 5x */}
       {/* Blue glow light */}
       <pointLight
         position={[0, 0, 0]}
@@ -147,9 +147,9 @@ function FeatherCabure({ position = [-2, 0, 0] }: { position?: [number, number, 
       <mesh>
         <boxGeometry args={[1, 20, 0.2]} />
         <meshPhysicalMaterial 
-          color="#8B4513"
-          metalness={0.8}
-          roughness={0.2}
+          color="#4A3728"  // Darker brown color like the Caburé bird
+          metalness={0.2}
+          roughness={0.8}
           clearcoat={1}
           clearcoatRoughness={0.1}
           emissive="#0066ff"
@@ -158,14 +158,14 @@ function FeatherCabure({ position = [-2, 0, 0] }: { position?: [number, number, 
         />
       </mesh>
 
-      {/* Feather details with shimmering effect */}
+      {/* Feather details with natural brown colors */}
       {Array.from({ length: 15 }).map((_, i) => (
         <mesh key={i} position={[0, i * 1.2 - 10, 0.2]} rotation={[0, 0, Math.PI * 0.15]}>
           <planeGeometry args={[3, 1]} />
           <meshPhysicalMaterial 
-            color="#D2691E"
-            metalness={0.6}
-            roughness={0.3}
+            color="#6B4423"  // Rich brown color for feather details
+            metalness={0.2}
+            roughness={0.7}
             transparent
             opacity={0.9}
             side={THREE.DoubleSide}
