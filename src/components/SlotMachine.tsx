@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Text3D, Center } from '@react-three/drei';
 import { Howl } from 'howler';
 import { Coffee, Trophy } from 'lucide-react';
@@ -104,6 +104,57 @@ function RotatingTitle() {
           />
         </Text3D>
       </Center>
+    </group>
+  );
+}
+
+function FeatherCabure({ position = [-2, 0, 0] }: { position?: [number, number, number] }) {
+  const featherRef = useRef<THREE.Group>(null);
+  const [visible, setVisible] = useState(true);
+
+  useFrame((state) => {
+    if (featherRef.current) {
+      featherRef.current.rotation.y += 0.01;
+      featherRef.current.position.y = Math.sin(state.clock.elapsedTime) * 0.1;
+    }
+  });
+
+  useEffect(() => {
+    // Hide the feather after 5 seconds
+    const timer = setTimeout(() => {
+      setVisible(false);
+    }, 5000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <group ref={featherRef} position={position} scale={[0.03, 0.03, 0.03]}>
+      <mesh>
+        <boxGeometry args={[1, 20, 0.2]} />
+        <meshPhysicalMaterial 
+          color="#8B4513"
+          metalness={0.1}
+          roughness={0.8}
+          clearcoat={1}
+        />
+      </mesh>
+      {/* Feather details */}
+      {Array.from({ length: 15 }).map((_, i) => (
+        <mesh key={i} position={[0, i * 1.2 - 10, 0.2]} rotation={[0, 0, Math.PI * 0.15]}>
+          <planeGeometry args={[3, 1]} />
+          <meshPhysicalMaterial 
+            color="#D2691E"
+            metalness={0.2}
+            roughness={0.7}
+            transparent
+            opacity={0.9}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      ))}
     </group>
   );
 }
@@ -277,9 +328,33 @@ function DigitalCounter({ onPush }: { onPush: (number: number) => void }) {
 }
 
 export default function SlotMachine() {
-  // Removed unused jackpot state
   const [winningNumbers, setWinningNumbers] = useState<string[]>([]);
   const [backgroundImage, setBackgroundImage] = useState<string>('');
+  const [showFeather, setShowFeather] = useState(false);
+
+  // Check for repeated numbers
+  const checkRepeatedNumbers = (numbers: string[]) => {
+    const counts: { [key: string]: number } = {};
+    numbers.forEach(num => {
+      counts[num] = (counts[num] || 0) + 1;
+    });
+    
+    return Object.values(counts).some(count => count >= 3);
+  };
+
+  useEffect(() => {
+    if (checkRepeatedNumbers(winningNumbers)) {
+      setShowFeather(true);
+      playSoundWithCheck(new Howl({
+        src: [`${base}sonidos/welcome.mp3`],
+        volume: 0.7
+      }));
+      
+      setTimeout(() => {
+        setShowFeather(false);
+      }, 5000);
+    }
+  }, [winningNumbers]);
 
   useEffect(() => {
     // Cargar imágenes aleatorias desde la carpeta public/fotos
@@ -389,6 +464,7 @@ export default function SlotMachine() {
             {/* Rest of the scene */}
             <Machine />
             <RotatingTitle />
+            {showFeather && <FeatherCabure />}
             <OrbitControls enableZoom={false} />
           </Canvas>
         </div>
