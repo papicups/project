@@ -615,8 +615,14 @@ export default function SlotMachine() {
           <div
             className="fixed bottom-0 w-full bg-black bg-opacity-75 text-white text-center py-4"
           >
-            <p className="text-xl font-bold text-gray-300">Papiweb Desarrollos Informáticos</p>
-            <p className="text-sm opacity-75 text-gray-300">© 2024 Todos los derechos reservados</p>
+            <div className="text-center space-y-2">  {/* Espaciado vertical automático */}
+              <p className="text-xl font-bold text-gray-300 hover:text-white transition-colors">  {/* Efecto hover */}
+                Papiweb Desarrollos Informáticos
+              </p>
+              <p className="text-sm text-gray-400/75 font-light">  {/* Peso de fuente más fino */}
+                © 2024 Todos los derechos reservados
+              </p>
+            </div>
           </div>
         </div>
       </div>
