@@ -615,13 +615,42 @@ export default function SlotMachine() {
           <div
             className="fixed bottom-0 w-full bg-black bg-opacity-75 text-white text-center py-4"
           >
-            <div className="text-center space-y-2">  {/* Espaciado vertical automático */}
-              <p className="text-xl font-bold text-gray-300 hover:text-white transition-colors">  {/* Efecto hover */}
-                Papiweb Desarrollos Informáticos
-              </p>
-              <p className="text-sm text-gray-400/75 font-light">  {/* Peso de fuente más fino */}
-                © 2024 Todos los derechos reservados
-              </p>
+            <div className="text-center space-y-2 relative z-[999]">
+              <div className="animate-fade-in-up delay-100">
+                <p className="text-xl font-bold text-gray-100 drop-shadow-lg hover:scale-105 transition-all duration-300">
+                  Papiweb Desarrollos Informáticos
+                </p>
+              </div>
+              
+              <div className="animate-fade-in-up delay-300">
+                <p className="text-sm text-gray-300/95 font-light tracking-wide">
+                  © 2024 Todos los derechos reservados
+                </p>
+              </div>
+
+              <style jsx global>{`
+                @keyframes fade-in-up {
+                  0% {
+                    opacity: 0;
+                    transform: translateY(20px);
+                  }
+                  100% {
+                    opacity: 1;
+                    transform: translateY(0);
+                  }
+                }
+                
+                .animate-fade-in-up {
+                  animation: fade-in-up 0.8s ease-out forwards;
+                }
+                
+                .delay-100 { animation-delay: 100ms; }
+                .delay-300 { animation-delay: 300ms; }
+                
+                .drop-shadow-lg {
+                  filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.3));
+                }
+              `}</style>
             </div>
           </div>
         </div>
