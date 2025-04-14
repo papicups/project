@@ -155,7 +155,7 @@ function FeatherCabure({ position = [-4, 0, 0] }: { position?: [number, number, 
   if (!visible) return null;
 
   return (
-    <group ref={featherRef} position={position} scale={[0.525, 0.525, 0.525]}>
+    <group ref={featherRef} position={position} scale={[0.2625, 0.2625, 0.2625]}>
       <group ref={glowRef}>
         <pointLight position={[0, 0, 0]} distance={5} intensity={2} color="#FFD700" />
         <mesh>
@@ -311,9 +311,9 @@ function Machine() {
     let spins = 0;
     const maxSpins = 20;
     const interval = setInterval(() => {
-      setNumbers(numbers.map(() => 
-        Math.floor(Math.random() * 100).toString().padStart(2, '0')
-      ));
+      setNumbers((prevNumbers) => 
+        prevNumbers.map(() => Math.floor(Math.random() * 100).toString().padStart(2, '0'))
+      );
 
       spins++;
       if (spins >= maxSpins) {
@@ -628,7 +628,7 @@ export default function SlotMachine() {
                 </p>
               </div>
 
-              <style jsx global>{`
+              <style>{`
                 @keyframes fade-in-up {
                   0% {
                     opacity: 0;
